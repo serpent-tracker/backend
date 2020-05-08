@@ -1,0 +1,40 @@
+
+name: Test, Build & Push Image For Staging & Develop
+
+on:
+  push:
+    paths-ignore:
+    - "README.md"
+    - "frontend/**"
+    branches: 
+      - staging
+
+jobs:
+  backend-testing:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run Test Shell Script
+      run: sh ./scripts/test.sh
+  build-image:
+    name: Build & Push To ECR
+    runs-on: ubuntu-latest
+    needs: [backend-testing]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Login to ECR
+      id: ecr
+      uses: jwalton/gh-ecr-login@v1
+      with:
+        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: us-east-1
+    - name: Build Backend Latest Image
+      run: docker build --tag ${{ steps.ecr.outputs.account }}.dkr.ecr.us-east-1.amazonaws.com/serpent-tracker-backend:${GITHUB_REF##*/} -f backend/backend.dockerfile ./backend
+    - name: Tag Backend Commit Tag
+      run: docker tag ${{ steps.ecr.outputs.account }}.dkr.ecr.us-east-1.amazonaws.com/serpent-tracker-backend:${GITHUB_REF##*/} ${{ steps.ecr.outputs.account }}.dkr.ecr.us-east-1.amazonaws.com/serpent-tracker-backend:$(echo ${GITHUB_SHA} | cut -c1-8)
+    - name: Push Backend Latest Image to ECR
+      run: docker push ${{ steps.ecr.outputs.account }}.dkr.ecr.us-east-1.amazonaws.com/serpent-tracker-backend:${GITHUB_REF##*/}
+    - name: Push Backend Commit Tag Image to ECR
+      run: docker push ${{ steps.ecr.outputs.account }}.dkr.ecr.us-east-1.amazonaws.com/serpent-tracker-backend:$(echo ${GITHUB_SHA} | cut -c1-8)

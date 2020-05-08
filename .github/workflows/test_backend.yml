@@ -1,0 +1,27 @@
+name: Test Backend API & Report Coverage
+
+on:
+  push:
+    paths-ignore:
+    - "README.md"
+    - "frontend/**"
+  pull_request:
+    paths-ignore:
+    - "README.md"
+    - "frontend/**"
+
+jobs:
+  backend-testing:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run Test Shell Script
+      run: sh ./scripts/test-local.sh --cov-report xml
+    - name: Upload coverage to Codecov  
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        working-directory: ${{ github.workspace }}/backend/app
+        flags: backend
+        fail_ci_if_error: true

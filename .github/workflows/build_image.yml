@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Create ENV File
+      run: mv .env.example .env
     - name: Run Test Shell Script
       run: sh ./scripts/test.sh
   build-image:

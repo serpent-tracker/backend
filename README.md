@@ -2,6 +2,9 @@
 
 [![codecov](https://codecov.io/gh/serpent-tracker/backend/branch/master/graph/badge.svg?token=KaVBnfQ1jL)](https://codecov.io/gh/serpent-tracker/backend)
 
+## Example Demo
+You can see an example of the current API docs and demo at http://staging-api.serpent-tracker.com/docs
+
 ## Backend Requirements
 
 * [Docker](https://www.docker.com/).

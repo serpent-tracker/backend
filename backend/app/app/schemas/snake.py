@@ -23,6 +23,7 @@ class SnakeBase(BaseModel):
     produced_by: Optional[str] = None
     visual_genes: Optional[list] = None
     het_genes: Optional[list] = None
+    imageurl: Optional[str] = None
 
 
 # Properties to receive on snake creation

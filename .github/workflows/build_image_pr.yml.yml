@@ -1,5 +1,5 @@
 
-name: Test, Build & Push Image PR
+name: Test PR
 
 on:
   pull_request:

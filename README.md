@@ -5,17 +5,14 @@
 ## Example Demo
 You can see an example of the current API docs and demo at http://api-demo.serpent-tracker.com/docs
 
-## Backend Requirements
+## Requirements
 
 * [Docker](https://www.docker.com/).
 * [Docker Compose](https://docs.docker.com/compose/install/).
 * [Poetry](https://python-poetry.org/) for Python package and environment management.
 
-## Frontend Requirements
 
-* Node.js (with `npm`).
-
-## Backend local development
+## Local development
 
 Using the `.env.example` create a `.env` file with your secrets, domain, and such.
 
@@ -27,11 +24,11 @@ docker-compose up -d
 
 * Now you can open your browser and interact with these URLs:
 
-Backend, JSON based web API based on OpenAPI: http://localhost/api/
+Backend, JSON based web API based on OpenAPI: http://localhost:8888/api/
 
-Automatic interactive documentation with Swagger UI (from the OpenAPI backend): http://localhost/docs
+Automatic interactive documentation with Swagger UI (from the OpenAPI backend): http://localhost:8888/docs
 
-Alternative automatic documentation with ReDoc (from the OpenAPI backend): http://localhost/redoc
+Alternative automatic documentation with ReDoc (from the OpenAPI backend): http://localhost:8888/redoc
 
 **Note**: The first time you start your stack, it might take a minute for it to be ready. While the backend waits for the database to be ready and configures everything. You can check the logs to monitor it.
 
@@ -46,8 +43,6 @@ To check the logs of a specific service, add the name of the service, e.g.:
 ```bash
 docker-compose logs backend
 ```
-
-If your Docker is not running in `localhost` (the URLs above wouldn't work) check the sections below on **Development with Docker Toolbox** and **Development with a custom IP**.
 
 ## Backend local development, additional details
 
@@ -271,94 +266,6 @@ $ alembic upgrade head
 ```
 
 If you don't want to start with the default models and want to remove them / modify them, from the beginning, without having any previous revision, you can remove the revision files (`.py` Python files) under `./backend/app/alembic/versions/`. And then create a first migration as described above.
-
-
-### Development in `localhost` with a custom domain
-
-You might want to use something different than `localhost` as the domain. For example, if you are having problems with cookies that need a subdomain, and Chrome is not allowing you to use `localhost`.
-
-In that case, you have two options: you could use the instructions to modify your system `hosts` file with the instructions below in **Development with a custom IP** or you can just use `localhost.tiangolo.com`, it is set up to point to `localhost` (to the IP `127.0.0.1`) and all its subdomains too. And as it is an actual domain, the browsers will store the cookies you set during development, etc.
-
-If you used the default CORS enabled domains while generating the project, `localhost.tiangolo.com` was configured to be allowed. If you didn't, you will need to add it to the list in the variable `BACKEND_CORS_ORIGINS` in the `.env` file.
-
-To configure it in your stack, follow the section **Change the development "domain"** below, using the domain `localhost.tiangolo.com`.
-
-After performing those steps you should be able to open: http://localhost.tiangolo.com and it will be server by your stack in `localhost`.
-
-Check all the corresponding available URLs in the section at the end.
-
-### Development with a custom IP
-
-If you are running Docker in an IP address different than `127.0.0.1` (`localhost`) and `192.168.99.100` (the default of Docker Toolbox), you will need to perform some additional steps. That will be the case if you are running a custom Virtual Machine, a secondary Docker Toolbox or your Docker is located in a different machine in your network.
-
-In that case, you will need to use a fake local domain (`dev.serpent-tracker.com`) and make your computer think that the domain is is served by the custom IP (e.g. `192.168.99.150`).
-
-If you used the default CORS enabled domains, `dev.serpent-tracker.com` was configured to be allowed. If you want a custom one, you need to add it to the list in the variable `BACKEND_CORS_ORIGINS` in the `.env` file.
-
-* Open your `hosts` file with administrative privileges using a text editor:
-  * **Note for Windows**: If you are in Windows, open the main Windows menu, search for "notepad", right click on it, and select the option "open as Administrator" or similar. Then click the "File" menu, "Open file", go to the directory `c:\Windows\System32\Drivers\etc\`, select the option to show "All files" instead of only "Text (.txt) files", and open the `hosts` file.
-  * **Note for Mac and Linux**: Your `hosts` file is probably located at `/etc/hosts`, you can edit it in a terminal running `sudo nano /etc/hosts`.
-
-* Additional to the contents it might have, add a new line with the custom IP (e.g. `192.168.99.150`) a space character, and your fake local domain: `dev.serpent-tracker.com`.
-
-The new line might look like:
-
-```
-192.168.99.100    dev.serpent-tracker.com
-```
-
-* Save the file.
-  * **Note for Windows**: Make sure you save the file as "All files", without an extension of `.txt`. By default, Windows tries to add the extension. Make sure the file is saved as is, without extension.
-
-...that will make your computer think that the fake local domain is served by that custom IP, and when you open that URL in your browser, it will talk directly to your locally running server when it is asked to go to `dev.serpent-tracker.com` and think that it is a remote server while it is actually running in your computer.
-
-To configure it in your stack, follow the section **Change the development "domain"** below, using the domain `dev.serpent-tracker.com`.
-
-After performing those steps you should be able to open: http://dev.serpent-tracker.com and it will be server by your stack in `localhost`.
-
-Check all the corresponding available URLs in the section at the end.
-
-### Change the development "domain"
-
-If you need to use your local stack with a different domain than `localhost`, you need to make sure the domain you use points to the IP where your stack is set up. See the different ways to achieve that in the sections above (i.e. using Docker Toolbox with `local.dockertoolbox.tiangolo.com`, using `localhost.tiangolo.com` or using `dev.serpent-tracker.com`).
-
-To simplify your Docker Compose setup, for example, so that the API docs (Swagger UI) knows where is your API, you should let it know you are using that domain for development. You will need to edit 1 line in 2 files.
-
-* Open the file located at `./.env`. It would have a line like:
-
-```
-DOMAIN=localhost
-```
-
-* Change it to the domain you are going to use, e.g.:
-
-```
-DOMAIN=localhost.tiangolo.com
-```
-
-That variable will be used by the Docker Compose files.
-
-* Now open the file located at `./frontend/.env`. It would have a line like:
-
-```
-VUE_APP_DOMAIN_DEV=localhost
-```
-
-* Change that line to the domain you are going to use, e.g.:
-
-```
-VUE_APP_DOMAIN_DEV=localhost.tiangolo.com
-```
-
-That variable will make your frontend communicate with that domain when interacting with your backend API, when the other variable `VUE_APP_ENV` is set to `development`.
-
-After changing the two lines, you can re-start your stack with:
-
-```bash
-docker-compose up -d
-```
-
-and check all the corresponding available URLs in the section at the end.
 
 
 ## Deployment

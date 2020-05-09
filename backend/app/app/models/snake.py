@@ -33,3 +33,4 @@ class Snake(Base):
     produced_by = Column(String)
     visual_genes = Column(ARRAY(String))
     het_genes = Column(ARRAY(String))
+    imageurl = Column(String)
